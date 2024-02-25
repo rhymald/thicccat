@@ -1,0 +1,38 @@
+Paths:
+- `/` - root
+- `/WORLD` - path for locaton data of WORLD world.
+- `/WORLD/playchain/PLAYER` - path for player PLAYER datas.
+- `/WORLD/playchain/PLAYER/base/BASE-0` - initial stats when player born
+- `/WORLD/playchain/PLAYER/base/BASE-1` - initial stats when leveled up from 0 to 1, goes behind previose BASE-* block with latest child SESSION blocks at the moment
+- `/WORLD/playchain/PLAYER/base/BASE-1/sessions/LOGIN-F` - latest login-to-logout session chain of all connections to PLAYERS/BASE/SESSION, SPAWN/BASE/SESSION, LOOT/DROP blocks-to-action, with a link to current-to dropchain BLOCK for 1st and last blocks
+    - `/WORLD/playchain/PLAYER/base/BASE-1/tool/TOOLS-F` - what is in hands for actve effect - can be changed in safe zone().
+        - Activate world objects
+        - Gather materials
+        - Empower schemas with concentrator
+        - Block attacks with shield
+        - etc.
+    - `/WORLD/playchain/PLAYER/base/BASE-1/state/HP-F` - latest (-F) saved difference (DIFF block) damage taken, heat received, dots burnt statistics (cexp, aexp, dexp), goes behind previous HP-* block.
+        - Heat received/cooled
+        - Damage rceived/prevented/healed
+        - Dots burnt/regenerated/obtained
+        - etc.
+    - `/WORLD/playchain/PLAYER/base/BASE-1/consumables/CONSUMABLES-F` - saved difference, what potions used/obtained for example.
+        - Potion drank/restored
+        - etc.
+- `/WORLD/effectchain/AREA` - no idea how to summarize effects happened
+    - connected to NPCs, PLAYERs, LOOTBOXes with affection weights.
+    - Bad/good weather (equaly dsitributed)
+    - Explosion (concentrated)
+    - Source of power (weightened)
+    - Curse (absorbed weightnened and concentrated)
+- `/WORLD/spawnchain/NPC` - path for npc species
+- `/WORLD/spawnchain/NPC/base/BASE-XYZ` - path for npc locations
+- `/WORLD/spawnchain/NPC/base/XYZBASE-1/sessions/SPAWN-F` - path for npc sessions
+    - HP (same as player)
+    - CONSUMABLES (if needed)
+    - TOOL (if needed)
+- `/WORLD/dropchain/LOOTBOX/area/XYZ/stash/CONTETNCHANGE-F` spawned on player/npc action (npc death / loot drop / tree plant, etc. )
+    - LOOTPOOL (modification by effects received: meat -> roasted meat on fire)
+    - ADD (drop)
+    - LOOT (get)
+    - PRODUCE (by a tool)
