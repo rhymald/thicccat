@@ -20,7 +20,7 @@ func main() {
 		fmt.Printf("Prsh: %X\n", block.Prsh)
 		fmt.Printf("Data: %s\n", block.Data)
 		fmt.Printf("Hash: %X\n", block.Hash)
-		fmt.Printf("------------------------------------------------------------\n\n")
+		fmt.Printf("=======================================================================\n\n")
 	}
 	select{}
 }
