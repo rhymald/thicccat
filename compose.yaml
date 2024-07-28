@@ -1,0 +1,95 @@
+---
+version: "3.9"
+services: 
+
+  thicccat: 
+    build: .
+  # image: rhymald/thicccat:latest
+    ports:
+      - 4917:4917
+      - 9093:9093
+    environment:
+      - GIN_MODE=release
+      - CACHEDB_WRITER_URL=postgresql://root@cockroachdb:26257/grid?sslmode=disable
+    deploy:
+      resources:
+        limits:
+          # cpus: '0.2'
+          memory: 6144M
+        reservations:
+          # cpus: '0.5'
+          memory: 6144M
+    links:
+      - prometheus
+      - cockroachdb
+      # - otel-collector
+    depends_on:
+      - cockroachdb
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./confs/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: 
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=rhym
+      - GF_SECURITY_ADMIN_PASSWORD=454010
+    volumes:
+      - ./confs/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - grafana:/var/lib/grafana
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    volumes: 
+      - ./confs/jaeger-ui.json:/etc/jaeger/jaeger-ui.json
+    command: --query.ui-config /etc/jaeger/jaeger-ui.json
+    environment: 
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+    ports:
+      - 14250:14250
+      - 14268:14268
+      - 6831:6831/udp
+      - 16686:16686
+      - 16685:16685
+    
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: --config /etc/otelcol/otel-collector.yml
+    volumes: 
+      - ./confs/otel-collector.yml:/etc/otelcol/otel-collector.yml
+    ports:
+      - 14278:14278
+    depends_on: 
+      - jaeger
+
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    command: start-single-node --http-addr=0.0.0.0:8080 --insecure
+    ports: 
+      - 8080:8080
+      - 26257:26257
+    environment: 
+      - COCKROACH_DATABASE=grid
+      - COCKROACH_USER=rhymald
+      - COCKROACH_SKIP_KEY_PERMISSION_CHECK=true
+    # deploy:
+    #   resources:
+    #     limits:
+    #       # cpus: '0.2'
+    #       memory: 2048M
+    #     reservations:
+    #       # cpus: '0.5'
+    #       memory: 2048M
+    # volumes:
+    #   - '/mnt/ramdisk:/cockroach/cockroach-data'
+        # ^ sudo mount -t tmpfs -o rw,size=2G tmpfs /mnt/ramdisk
+
+volumes:
+  grafana:
